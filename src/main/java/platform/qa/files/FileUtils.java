@@ -80,24 +80,24 @@ public class FileUtils {
     }
 
     @SneakyThrows
-    public static <T> List<T> readCsvFileToObject(File csvFile, char separator, T objectToConvert) {
+    public static <T> List<T> readCsvFileToObject(File csvFile, char separator, Class<T> clazz) {
         CsvMapper csvMapper = new CsvMapper();
 
         CsvSchema csvSchema = csvMapper
-                .typedSchemaFor(objectToConvert.getClass())
+                .typedSchemaFor(clazz)
                 .withHeader()
                 .withColumnSeparator(separator)
                 .withComments();
 
         try (MappingIterator<T> iterator = csvMapper
-                .readerWithTypedSchemaFor(objectToConvert.getClass())
+                .readerWithTypedSchemaFor(clazz)
                 .with(csvSchema)
                 .readValues(csvFile)) {
             return iterator.readAll();
         }
     }
 
-    public static <T> List<T> readCsvFileToObject(File csvFile, T objectToConvert) {
-        return readCsvFileToObject(csvFile, ',', objectToConvert);
+    public static <T> List<T> readCsvFileToObject(File csvFile, Class<T> clazz) {
+        return readCsvFileToObject(csvFile, ',', clazz);
     }
 }
