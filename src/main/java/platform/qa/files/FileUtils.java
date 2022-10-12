@@ -20,6 +20,7 @@ import static com.google.common.base.CharMatcher.invisible;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
@@ -30,6 +31,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -73,5 +77,27 @@ public class FileUtils {
             log.info("CSV file: " + file.getAbsolutePath() + " was not parsed!!!");
         }
         return results;
+    }
+
+    @SneakyThrows
+    public static <T> List<T> readCsvFileToObject(File csvFile, char separator, T objectToConvert) {
+        CsvMapper csvMapper = new CsvMapper();
+
+        CsvSchema csvSchema = csvMapper
+                .typedSchemaFor(objectToConvert.getClass())
+                .withHeader()
+                .withColumnSeparator(separator)
+                .withComments();
+
+        try (MappingIterator<T> iterator = csvMapper
+                .readerWithTypedSchemaFor(objectToConvert.getClass())
+                .with(csvSchema)
+                .readValues(csvFile)) {
+            return iterator.readAll();
+        }
+    }
+
+    public static <T> List<T> readCsvFileToObject(File csvFile, T objectToConvert) {
+        return readCsvFileToObject(csvFile, ',', objectToConvert);
     }
 }
