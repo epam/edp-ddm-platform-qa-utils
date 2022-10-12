@@ -16,71 +16,20 @@
 
 package platform.qa.files;
 
-import static com.google.common.base.CharMatcher.invisible;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.nio.file.Files;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.exceptions.CsvException;
 
 @Log4j2
 public class FileUtils {
 
-    public static List<Map<String, String>> readCsvFile(File file) {
-        CSVParser parser = new CSVParserBuilder()
-                .withSeparator(',')
-                .withIgnoreQuotations(false)
-                .withIgnoreLeadingWhiteSpace(true)
-                .withQuoteChar('"')
-                .build();
-        return readCsvFile(file, parser);
-    }
-
-    public static List<Map<String, String>> readCsvFile(File file, CSVParser parser) {
-        List<Map<String, String>> results = new LinkedList<>();
-
-        try (Reader reader = Files.newBufferedReader(file.toPath())) {
-            List<String[]> allRecords;
-            try (CSVReader csvReader = new CSVReaderBuilder(reader).withCSVParser(parser).build()) {
-                allRecords = csvReader.readAll();
-            }
-
-            if (allRecords != null && !allRecords.isEmpty()) {
-                String[] headers = allRecords.get(0);
-                results = allRecords
-                        .subList(1, allRecords.size()).stream()
-                        .map(line -> IntStream.range(0, line.length)
-                                .boxed()
-                                .collect(toMap(i -> invisible().trimFrom(headers[i]),
-                                        i -> invisible().trimFrom(line[i]))))
-                        .collect(toList());
-            }
-
-        } catch (IOException | CsvException e) {
-            log.info("CSV file: " + file.getAbsolutePath() + " was not parsed!!!");
-        }
-        return results;
-    }
-
     @SneakyThrows
-    public static <T> List<T> readCsvFileToObject(File csvFile, char separator, Class<T> clazz) {
+    public static <T> List<T> readCsvFile(File csvFile, char separator, Class<T> clazz) {
         CsvMapper csvMapper = new CsvMapper();
 
         CsvSchema csvSchema = csvMapper
@@ -97,7 +46,7 @@ public class FileUtils {
         }
     }
 
-    public static <T> List<T> readCsvFileToObject(File csvFile, Class<T> clazz) {
-        return readCsvFileToObject(csvFile, ',', clazz);
+    public static <T> List<T> readCsvFile(File csvFile, Class<T> clazz) {
+        return readCsvFile(csvFile, ',', clazz);
     }
 }
