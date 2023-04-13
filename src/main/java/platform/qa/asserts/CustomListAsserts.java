@@ -36,8 +36,8 @@ public class CustomListAsserts {
      */
     public static void assertAlphabeticSorting(List<String> list) {
         List<String> expectedList = new ArrayList<>(list);
-
         Locale dLocale = new Locale.Builder().setLanguage("ru").setScript("Cyrl").build();
+        expectedList.sort(Collator.getInstance(dLocale));
         list.sort(Collator.getInstance(dLocale));
         assertThat(list)
                 .as("Перелік заданих значень не відсортований у алфавітному порядку")
@@ -79,9 +79,9 @@ public class CustomListAsserts {
     }
 
     /**
-     *  Застосовується для сортування дат, у спадаючому порядку
-     *  у вигляді рядка: "16.12.2020 19:36",
-     *  порівняння дат відбувається, після приведення до типу "Дата"
+     * Застосовується для сортування дат, у спадаючому порядку
+     * у вигляді рядка: "16.12.2020 19:36",
+     * порівняння дат відбувається, після приведення до типу "Дата"
      */
     public static void assertDateReverseSorting(List<String> list) {
         List<String> expectedList = new ArrayList<>(list);
@@ -95,9 +95,9 @@ public class CustomListAsserts {
     }
 
     /**
-     *  Застосовується для сортування дат, у зростаючому порядку
-     *  у вигляді рядка: "16.12.2020 19:36",
-     *  порівняння дат відбувається, після приведення до типу "Дата"
+     * Застосовується для сортування дат, у зростаючому порядку
+     * у вигляді рядка: "16.12.2020 19:36",
+     * порівняння дат відбувається, після приведення до типу "Дата"
      */
     public static void assertDateSorting(List<String> list) {
         List<String> expectedList = new ArrayList<>(list);
