@@ -37,11 +37,10 @@ public class CustomListAsserts {
     public static void assertAlphabeticSorting(List<String> list) {
         List<String> expectedList = new ArrayList<>(list);
         Locale dLocale = new Locale.Builder().setLanguage("ru").setScript("Cyrl").build();
-        expectedList.sort(Collator.getInstance(dLocale));
         list.sort(Collator.getInstance(dLocale));
-        assertThat(list)
+        assertThat(expectedList)
                 .as("Перелік заданих значень не відсортований у алфавітному порядку")
-                .isEqualTo(expectedList);
+                .isEqualTo(list);
     }
 
     /**
